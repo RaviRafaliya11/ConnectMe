@@ -11,7 +11,11 @@ import { FcGoogle } from "react-icons/fc";
 
 export default function login() {
   const router = useRouter();
-  const [{}, dispatch] = useStateProvider();
+  const [{ userInfo, newUser }, dispatch] = useStateProvider();
+
+  useEffect(() => {
+    if (userInfo?.id && !newUser) router.push("/");
+  }, [userInfo, newUser]);
 
   const handleLogin = async () => {
     const provider = new GoogleAuthProvider();
