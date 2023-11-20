@@ -1,29 +1,51 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ChatList from "./Chatlist/ChatList";
 import Empty from "./Empty";
 import { onAuthStateChanged } from "firebase/auth";
 import { firebaseAuth } from "@/utils/FirebaseConfig";
 import axios from "axios";
-import { CHECK_USER_ROUTE } from "@/utils/ApiRoutes";
+import { CHECK_USER_ROUTE, GET_MESSAGES_ROUTE, HOST } from "@/utils/ApiRoutes";
 import { useRouter } from "next/router";
 import { useStateProvider } from "@/context/StateContext";
 import { reducerCases } from "@/context/constants";
 import Chat from "./Chat/Chat";
+import { io } from "socket.io-client";
+import VoiceCall from "./Call/VoiceCall";
+import VideoCall from "./Call/VideoCall";
+import IncomingVideoCall from "./common/IncomingVideoCall";
+import IncomingVoiceCall from "./common/IncomingVoiceCall";
 
 function Main() {
   const [redirectLogin, setRedirectLogin] = useState(false);
-  const [{ userInfo, currentChatUser }, dispatch] = useStateProvider();
+  const [
+    {
+      userInfo,
+      currentChatUser,
+      videoCall,
+      voiceCall,
+      incomingVideoCall,
+      incomingVoiceCall,
+    },
+    dispatch,
+  ] = useStateProvider();
   const Router = useRouter();
+  const socket = useRef();
+  const [socketEvent, setSocketEvent] = useState(false);
 
   useEffect(() => {
     if (redirectLogin) Router.push("/login");
   }, [redirectLogin]);
 
   onAuthStateChanged(firebaseAuth, async (currentUser) => {
-    if (!currentUser) setRedirectLogin(true);
-    if (!userInfo && currentUser?.email) {
+    const savedData = JSON.parse(localStorage.getItem("userInfoLocalStorage"));
+    if (!currentUser) {
+      if (!savedData) {
+        setRedirectLogin(true);
+      }
+    }
+    if (!userInfo && (currentUser?.email || savedData?.email)) {
       const { data } = await axios.post(CHECK_USER_ROUTE, {
-        email: currentUser.email,
+        email: savedData?.email || currentUser?.email,
       });
 
       if (!data.status) {
@@ -42,12 +64,94 @@ function Main() {
     }
   });
 
+  useEffect(() => {
+    const getMessages = async () => {
+      const {
+        data: { messages },
+      } = await axios.get(
+        `${GET_MESSAGES_ROUTE}/${userInfo.id}/${currentChatUser.id}`
+      );
+      dispatch({ type: reducerCases.SET_MESSAGES, messages });
+    };
+    if (currentChatUser?.id) getMessages();
+  }, [currentChatUser]);
+
+  useEffect(() => {
+    if (userInfo) {
+      socket.current = io(HOST);
+      socket.current.emit("add-user", userInfo.id);
+      dispatch({ type: reducerCases.SET_SOCKET, socket });
+    }
+  }, [userInfo]);
+
+  useEffect(() => {
+    if (socket.current && !socketEvent) {
+      socket.current.on("msg-recieve", (data) => {
+        dispatch({
+          type: reducerCases.ADD_MESSAGE,
+          newMessage: { ...data.message },
+        });
+      });
+
+      socket.current.on("online-users", ({ onlineUsers }) => {
+        dispatch({
+          type: reducerCases.SET_ONLINE_USERS,
+          onlineUsers,
+        });
+      });
+      socket.current.on("incoming-voice-call", ({ from, roomId, callType }) => {
+        dispatch({
+          type: reducerCases.SET_INCOMING_VOICE_CALL,
+          incomingVoiceCall: { ...from, roomId, callType },
+        });
+      });
+
+      socket.current.on("incoming-video-call", ({ from, roomId, callType }) => {
+        dispatch({
+          type: reducerCases.SET_INCOMING_VIDEO_CALL,
+          incomingVideoCall: { ...from, roomId, callType },
+        });
+      });
+
+      socket.current.on("voice-call-rejected", () => {
+        dispatch({
+          type: reducerCases.END_CALL,
+        });
+      });
+
+      socket.current.on("video-call-rejected", () => {
+        dispatch({
+          type: reducerCases.END_CALL,
+        });
+      });
+
+      setSocketEvent(true);
+    }
+  }, [socket.current]);
+
   return (
     <>
-      <div className="grid grid-cols-main h-screen w-screen max-h-screen max-w-full overflow-hidden">
-        <ChatList />
-        {currentChatUser ? <Chat /> : <Empty />}
-      </div>
+      {incomingVoiceCall && <IncomingVoiceCall />}
+      {incomingVideoCall && <IncomingVideoCall />}
+
+      {voiceCall && (
+        <div className="h-screen w-screen max-h-full overflow-hidden">
+          <VoiceCall />
+        </div>
+      )}
+
+      {videoCall && (
+        <div className="h-screen w-screen max-h-full overflow-hidden">
+          <VideoCall />
+        </div>
+      )}
+
+      {!videoCall && !voiceCall && (
+        <div className="grid grid-cols-main h-screen w-screen max-h-screen max-w-full overflow-hidden">
+          <ChatList />
+          {currentChatUser ? <Chat /> : <Empty />}
+        </div>
+      )}
     </>
   );
 }
