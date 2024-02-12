@@ -10,6 +10,7 @@ import {
   FaStop,
   FaTrash,
 } from "react-icons/fa";
+import { IoSend } from "react-icons/io5";
 import { MdSend } from "react-icons/md";
 import WaveSurfer from "wavesurfer.js";
 
@@ -178,11 +179,15 @@ function CaptureAudio({ hide }) {
   return (
     <div className="flex text-2x1 w-full justify-end items-center">
       <div className="pt-1">
-        <FaTrash className="text-panel-header-icon" onClick={() => hide()} />
+        <FaTrash
+          size={28}
+          className="messagebar-icon rounded text-red-500 dark:text-red-500"
+          onClick={() => hide()}
+        />
       </div>
-      <div className="mx-4 py-2 px-4 text-white text-1g flex gap-3 justify-center items-center">
+      <div className="mx-4 py-2 px-4 text-white text-1g flex gap-2 justify-center items-center">
         {isRecording ? (
-          <div className="text-red-500 animate-pulse 2-60 text-center">
+          <div className="main-text font-semibold 2-60 text-center">
             Recording <span>{recordingDuration}s</span>
           </div>
         ) : (
@@ -190,15 +195,23 @@ function CaptureAudio({ hide }) {
             {recordedAudio && (
               <>
                 {!isPlaying ? (
-                  <FaPlay onClick={handlePlayRecording} />
+                  <FaPlay
+                    size={25}
+                    className="messagebar-icon rounded-none"
+                    onClick={handlePlayRecording}
+                  />
                 ) : (
-                  <FaStop onClick={handlePauseRecording} />
+                  <FaStop
+                    size={25}
+                    className="messagebar-icon rounded-none"
+                    onClick={handlePauseRecording}
+                  />
                 )}
               </>
             )}
           </div>
         )}
-        <div className="w-60" ref={waveFormRef} hidden={isRecording} />
+        <div className="w-52" ref={waveFormRef} hidden={isRecording} />
         {recordedAudio && isPlaying && (
           <span>{formatTime(currentPlaybackTime)}</span>
         )}
@@ -210,21 +223,24 @@ function CaptureAudio({ hide }) {
       <div className="mr-4">
         {!isRecording ? (
           <FaMicrophone
-            className="text-red-500"
+            size={28}
+            className="messagebar-icon"
             onClick={handleStartRecording}
           />
         ) : (
           <FaPauseCircle
-            className="text-red-500"
+            size={28}
+            className="messagebar-icon"
             onClick={handleStopRecording}
           />
         )}
       </div>
       <div>
-        <MdSend
-          className=" text-panel-header-icon cursor-pointer mr-4"
-          title="Send"
+        <IoSend
           onClick={sendRecording}
+          title="Send"
+          size={28}
+          className="messagebar-icon rounded mr-1"
         />
       </div>
     </div>

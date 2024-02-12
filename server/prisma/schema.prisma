@@ -19,6 +19,7 @@ profilePicture String @default("")
 about String @default("")
 sentMessages Messages[] @relation("sentMessages")
 recievedMessages Messages[] @relation("recievedMessages")
+isPremiumUser Boolean @default(false)
 }
 
 

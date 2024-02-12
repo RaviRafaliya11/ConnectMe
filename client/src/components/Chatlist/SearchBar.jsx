@@ -1,41 +1,34 @@
 import { useStateProvider } from "@/context/StateContext";
 import { reducerCases } from "@/context/constants";
 import React from "react";
-import { BiSearchAlt2 } from "react-icons/bi";
-import { BsFilter } from "react-icons/bs";
+import { FaLayerGroup, FaSearch } from "react-icons/fa";
 function SearchBar() {
-  const [{ contactSearch }, dispatch] = useStateProvider();
+  const [{ contactSearch, isUnreadChat }, dispatch] = useStateProvider();
 
   return (
-    <div className=" bg-search-input-container-background flex py-3 pl-5 items-center gap-3 h-14">
-      <div className=" bg-panel-header-background flex items-center gap-5 px-3 py-1 rounded-lg flex-grow">
-        <div>
-          <BiSearchAlt2
-            className=" text-panel-header-icon cursor-pointer text-lg"
-            title="Search"
-          />
-        </div>
-        <div>
-          <input
-            type="text"
-            placeholder="Start"
-            className=" bg-transparent text-sm focus:outline-none text-white w-full"
-            value={contactSearch}
-            onChange={(e) =>
-              dispatch({
-                type: reducerCases.SET_CONTACT_SEARCH,
-                contactSearch: e.target.value,
-              })
-            }
-          />
-        </div>
-      </div>
-      <div className="pr-5 pl-3">
-        <BsFilter
-          className=" text-panel-header-icon cursor-pointer text-lg"
-          title="Filter"
+    <div className="flex gap-3 items-center justify-between px-3 top-navigation border-r border-b border-gray-400 dark:border-gray-600">
+      <div className="search w-full">
+        <input
+          className="search-input"
+          type="text"
+          placeholder="Search..."
+          value={contactSearch}
+          onChange={(e) =>
+            dispatch({
+              type: reducerCases.SET_CONTACT_SEARCH,
+              contactSearch: e.target.value,
+            })
+          }
         />
+        <FaSearch size="18" className="text-secondary my-auto" />
       </div>
+      <FaLayerGroup
+        className={`sidebar-icon w-8 h-8 p-2 ${
+          isUnreadChat ? "rounded-sm post-selected" : ""
+        }`}
+        title="Filter"
+        onClick={() => dispatch({ type: reducerCases.SET_UNREAD_CHATS })}
+      />
     </div>
   );
 }

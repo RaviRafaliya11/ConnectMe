@@ -3,8 +3,8 @@ import { reducerCases } from "@/context/constants";
 import { GET_ALL_CONTACTS } from "@/utils/ApiRoutes";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { BiArrowBack, BiSearchAlt2 } from "react-icons/bi";
 import ChatListItem from "./ChatListItem";
+import { FaArrowLeft, FaSearch } from "react-icons/fa";
 
 function ContactsList() {
   const [allContacts, setAllContacts] = useState([]);
@@ -42,63 +42,48 @@ function ContactsList() {
   }, []);
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="h-24 flex items-end px-3 py-4">
-        <div className="flex items-center gap-12 text-white">
-          <BiArrowBack
-            className="cursor-pointer text-xl"
-            onClick={() =>
-              dispatch({ type: reducerCases.SET_ALL_CONTACTS_PAGE })
-            }
+    <div className="h-auto overflow-y-scroll scrollbar-hide flex flex-col">
+      <div className="flex gap-3 items-center justify-between px-3 top-navigation border-r border-b border-gray-400 dark:border-gray-600">
+        <FaArrowLeft
+          className={`sidebar-icon w-8 h-8 p-2 `}
+          title="Back"
+          onClick={() => dispatch({ type: reducerCases.SET_ALL_CONTACTS_PAGE })}
+        />
+        <div className="search w-full">
+          <input
+            className="search-input"
+            type="text"
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <span>New Chat</span>
+          <FaSearch size="18" className="text-secondary my-auto" />
         </div>
       </div>
-      <div className=" bg-search-input-container-background h-full flex-auto overflow-auto custom-scrollbar">
-        <div className="flex py-3 items-center gap-3 h-14">
-          <div className=" bg-panel-header-background flex items-center gap-5 px-3 py-1 rounded-lg flex-grow mx-4">
-            <div>
-              <BiSearchAlt2
-                className=" text-panel-header-icon cursor-pointer text-lg"
-                title="Search"
-              />
-            </div>
-            <div>
-              <input
-                type="text"
-                placeholder="Search Contacts"
-                className=" bg-transparent text-sm focus:outline-none text-white w-full"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-          </div>
-        </div>
 
-        {Object.entries(searchContacts).map(([initialLetter, userList]) => {
-          return (
-            <>
-              {userList.length > 0 && (
-                <div key={Date.now() + initialLetter}>
-                  <div className="text-blue-500 pl-10 py-5">
-                    {initialLetter}
-                  </div>
-
-                  {userList.map((contact) => {
-                    return (
-                      <ChatListItem
-                        data={contact}
-                        isContactsPage={true}
-                        key={contact.id}
-                      />
-                    );
-                  })}
+      {Object.entries(searchContacts).map(([initialLetter, userList]) => {
+        return (
+          <>
+            {userList.length > 0 && (
+              <div key={Date.now() + initialLetter}>
+                <div className="main-text font-bold p-3 bg-gray-300 dark:bg-gray-800 ">
+                  {initialLetter}
                 </div>
-              )}
-            </>
-          );
-        })}
-      </div>
+
+                {userList.map((contact) => {
+                  return (
+                    <ChatListItem
+                      data={contact}
+                      isContactsPage={true}
+                      key={contact.id}
+                    />
+                  );
+                })}
+              </div>
+            )}
+          </>
+        );
+      })}
     </div>
   );
 }

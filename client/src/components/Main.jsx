@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import ChatList from "./Chatlist/ChatList";
 import Empty from "./Empty";
-import { onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { firebaseAuth } from "@/utils/FirebaseConfig";
 import axios from "axios";
 import { CHECK_USER_ROUTE, GET_MESSAGES_ROUTE, HOST } from "@/utils/ApiRoutes";
@@ -14,9 +14,14 @@ import VoiceCall from "./Call/VoiceCall";
 import VideoCall from "./Call/VideoCall";
 import IncomingVideoCall from "./common/IncomingVideoCall";
 import IncomingVoiceCall from "./common/IncomingVoiceCall";
+import Head from "next/head";
+import SideBar from "./SideBar";
+import ContentContainer from "./ContentContainer";
+import ChannelBar from "./ChannelBar";
 
 function Main() {
   const [redirectLogin, setRedirectLogin] = useState(false);
+
   const [
     {
       userInfo,
@@ -25,6 +30,7 @@ function Main() {
       voiceCall,
       incomingVideoCall,
       incomingVoiceCall,
+      isLeftSideOpen,
     },
     dispatch,
   ] = useStateProvider();
@@ -33,7 +39,7 @@ function Main() {
   const [socketEvent, setSocketEvent] = useState(false);
 
   useEffect(() => {
-    if (redirectLogin) Router.push("/login");
+    if (redirectLogin) Router.push("/HomePage");
   }, [redirectLogin]);
 
   onAuthStateChanged(firebaseAuth, async (currentUser) => {
@@ -43,7 +49,7 @@ function Main() {
         setRedirectLogin(true);
       }
     }
-    if (!userInfo && (currentUser?.email || savedData?.email)) {
+    if (!userInfo && (savedData?.email || currentUser?.email)) {
       const { data } = await axios.post(CHECK_USER_ROUTE, {
         email: savedData?.email || currentUser?.email,
       });
@@ -53,13 +59,7 @@ function Main() {
       }
       dispatch({
         type: reducerCases.SET_USER_INFO,
-        userInfo: {
-          id: data?.data?.id,
-          name: data?.data?.name,
-          email: data?.data?.emai,
-          profileImage: data?.data?.profilePicture,
-          status: "",
-        },
+        userInfo: data.data,
       });
     }
   });
@@ -130,9 +130,17 @@ function Main() {
   }, [socket.current]);
 
   return (
-    <>
-      {incomingVoiceCall && <IncomingVoiceCall />}
-      {incomingVideoCall && <IncomingVideoCall />}
+    <div>
+      {incomingVoiceCall && (
+        <div className="h-screen w-screen max-h-full overflow-hidden">
+          <IncomingVoiceCall />
+        </div>
+      )}
+      {incomingVideoCall && (
+        <div className="h-screen w-screen max-h-full overflow-hidden">
+          <IncomingVideoCall />
+        </div>
+      )}
 
       {voiceCall && (
         <div className="h-screen w-screen max-h-full overflow-hidden">
@@ -146,13 +154,17 @@ function Main() {
         </div>
       )}
 
-      {!videoCall && !voiceCall && (
-        <div className="grid grid-cols-main h-screen w-screen max-h-screen max-w-full overflow-hidden">
-          <ChatList />
-          {currentChatUser ? <Chat /> : <Empty />}
+      {!videoCall && !voiceCall && !incomingVoiceCall && !incomingVideoCall && (
+        <div className="flex">
+          <SideBar />
+
+          <>
+            <ChannelBar />
+            <ContentContainer />
+          </>
         </div>
       )}
-    </>
+    </div>
   );
 }
 

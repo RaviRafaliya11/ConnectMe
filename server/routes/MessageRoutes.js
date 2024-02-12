@@ -3,6 +3,7 @@ import {
   addAudioMessage,
   addImageMessage,
   addMessage,
+  deleteMessage,
   getInitialContactswithMessages,
   getMessages,
 } from "../controllers/MessageController.js";
@@ -17,5 +18,6 @@ router.get("/get-messages/:from/:to", getMessages);
 router.post("/add-image-message", uploadImage.single("image"), addImageMessage);
 router.get("/get-initial-contacts/:from", getInitialContactswithMessages);
 router.post("/add-audio-message", uploadAudio.single("audio"), addAudioMessage);
+router.delete("/deleteMessage/:messageId", deleteMessage);
 
 export default router;

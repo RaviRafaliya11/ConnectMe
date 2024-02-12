@@ -5,6 +5,7 @@ export const initialState = {
   newUser: false,
   contactsPage: false,
   currentChatUser: undefined,
+  isUnreadChat: false,
   messages: [],
   socket: undefined,
   userContacts: [],
@@ -14,6 +15,7 @@ export const initialState = {
   voiceCall: undefined,
   incomingVideoCall: undefined,
   incomingVoiceCall: undefined,
+  isLeftSideOpen: false,
 };
 
 const reducer = (state, action) => {
@@ -35,6 +37,20 @@ const reducer = (state, action) => {
       return {
         ...state,
         contactsPage: !state.contactsPage,
+      };
+    }
+
+    case reducerCases.SET_UNREAD_CHATS: {
+      return {
+        ...state,
+        isUnreadChat: !state.isUnreadChat,
+      };
+    }
+    case reducerCases.SET_LEFT_SIDE_OPEN: {
+      return {
+        ...state,
+        currentChatUser: undefined,
+        isLeftSideOpen: !state.isLeftSideOpen,
       };
     }
     case reducerCases.CHANGE_CURRENT_CHAT_USER: {

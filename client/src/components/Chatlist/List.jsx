@@ -27,7 +27,7 @@ function List() {
   }, [userInfo, messages]);
 
   return (
-    <div className=" bg-search-input-container-background flex-auto overflow-auto max-h-full custom-scrollbar">
+    <div className=" bg-gray-100 dark:bg-gray-900 flex-auto overflow-auto max-h-full custom-scrollbar">
       {filteredContacts && filteredContacts.length > 0
         ? filteredContacts.map((contact) => (
             <ChatListItem data={contact} key={contact.id} />
@@ -35,6 +35,8 @@ function List() {
         : userContacts.map((contact) => (
             <ChatListItem data={contact} key={contact.id} />
           ))}
+
+      {/* {filteredContacts && filteredContacts.length == 0 ? "No User" : ""} */}
     </div>
   );
 }

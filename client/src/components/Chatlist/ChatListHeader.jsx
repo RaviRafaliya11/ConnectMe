@@ -7,7 +7,8 @@ import { useRouter } from "next/router";
 import ContextMenu from "../common/ContextMenu";
 
 function ChatListHeader() {
-  const [{ userInfo }, dispatch] = useStateProvider();
+  const [{ userInfo, isLeftSideOpen }, dispatch] = useStateProvider();
+
   const router = useRouter();
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
   const [contextMenuLocation, setContextMenuLocation] = useState({
@@ -38,7 +39,10 @@ function ChatListHeader() {
   return (
     <div className="h-16 px-4 py-3 flex justify-between items-center">
       <div className="cursor-pointer">
-        <Avatar type="sm" image={userInfo?.profileImage} />
+        <Avatar
+          type="sm"
+          image={userInfo?.profileImage || userInfo?.profilePicture}
+        />
       </div>
       <div className="flex gap-6">
         <BsFillChatLeftTextFill

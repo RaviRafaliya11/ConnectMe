@@ -9,22 +9,29 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { FaMoon, FaSun } from "react-icons/fa";
 
-function createuser() {
-  const [{ userInfo, newUser }, dispatch] = useStateProvider();
+export default function Signup() {
+  const [{}, dispatch] = useStateProvider();
   const router = useRouter();
   const [darkTheme, setDarkTheme] = useDarkMode();
   const handleMode = () => setDarkTheme(!darkTheme);
-  const [name, setName] = useState(userInfo?.name || "");
+
+  const [name, setName] = useState("");
   const [about, setAbout] = useState("");
   const [image, setImage] = useState("/default_avatar.png");
   const [errorMessage, setErrorMessage] = useState();
-  const [email, setEmail] = useState(userInfo?.email);
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const validateDetails = (name, about, password, confirmPassword) => {
+  const validateDetails = (name, email, about, password, confirmPassword) => {
     if (name.length < 3) {
       setErrorMessage("Name is too short.");
+      return false;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setErrorMessage("Please Enter Valid Email Address.");
+
       return false;
     }
     if (about.length < 5) {
@@ -46,8 +53,7 @@ function createuser() {
   };
 
   const createNewUserHandler = async () => {
-    if (validateDetails(name, about, password, confirmPassword)) {
-      const email = userInfo.email;
+    if (validateDetails(name, email, about, password, confirmPassword)) {
       try {
         const { data } = await axios.post(CREATE_NEW_USER_ROUTE, {
           email,
@@ -71,6 +77,7 @@ function createuser() {
           router.push("/");
         }
       } catch (err) {
+        setErrorMessage("Email Already Taken");
         console.log(err);
       }
     }
@@ -126,10 +133,9 @@ function createuser() {
                     id="name"
                     type="name"
                     name="Name"
-                    value={name}
+                    state={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Name"
-                    disabled
                     class="flex items-center w-full px-5 py-4 mr-2 text-sm font-medium outline-none focus:bg-gray-400 mb-7 placeholder:text-gray-700 bg-gray-200  text-gray-900 rounded-2xl"
                   />
 
@@ -143,9 +149,8 @@ function createuser() {
                     id="email"
                     type="email"
                     name="Email"
-                    value={email}
+                    state={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    disabled
                     placeholder="connectme@gmail.com"
                     class="flex items-center w-full px-5 py-4 mr-2 text-sm font-medium outline-none focus:bg-gray-400 mb-7 placeholder:text-gray-700 bg-gray-200  text-gray-900 rounded-2xl"
                   />
@@ -223,5 +228,3 @@ function createuser() {
     </div>
   );
 }
-
-export default createuser;

@@ -219,3 +219,18 @@ export const addAudioMessage = async (req, res, next) => {
     next(err);
   }
 };
+
+export const deleteMessage = async (req, res, next) => {
+  try {
+    const prisma = getPrismaInstance();
+    const messageId = parseInt(req.params.messageId, 10);
+    const deletedMessage = await prisma.messages.delete({
+      where: { id: messageId },
+    });
+
+    res.json({ message: "Message deleted successfully", deletedMessage });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};

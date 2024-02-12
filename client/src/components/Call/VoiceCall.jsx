@@ -9,11 +9,12 @@ function VoiceCall() {
   const [{ socket, userInfo, voiceCall }, dispatch] = useStateProvider();
   useEffect(() => {
     if (voiceCall.type === "out-going") {
+      console.log(userInfo);
       socket.current.emit("outgoing-voice-call", {
         to: voiceCall.id,
         from: {
           id: userInfo.id,
-          profilePicture: userInfo.profileImage,
+          profilePicture: userInfo.profilePicture,
           name: userInfo.name,
         },
         callType: voiceCall.callType,

@@ -92,3 +92,22 @@ export const generateToken = (req, res, next) => {
     next(err);
   }
 };
+
+export const updateUserPremiumStatus = async (req, res, next) => {
+  try {
+    const { userId } = req.body;
+    const prisma = getPrismaInstance();
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        isPremiumUser: true,
+      },
+    });
+
+    res.json({ message: "User updated successfully", user: updatedUser });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};

@@ -1,6 +1,7 @@
 import Input from "@/components/common/Input";
 import { useStateProvider } from "@/context/StateContext";
 import { reducerCases } from "@/context/constants";
+import useDarkMode from "@/hooks/useDarkMode";
 import { CHECK_USER_ROUTE } from "@/utils/ApiRoutes";
 import { firebaseAuth } from "@/utils/FirebaseConfig";
 import axios from "axios";
@@ -8,6 +9,7 @@ import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import { FaMoon, FaSun } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 
 export default function login() {
@@ -62,13 +64,7 @@ export default function login() {
             );
             dispatch({
               type: reducerCases.SET_USER_INFO,
-              userInfo: {
-                id: data.data.id,
-                name: data.data.name,
-                email: data.data.email,
-                profileImage: data.data.profilePicture,
-                status: "",
-              },
+              userInfo: data.data,
             });
             router.push("/");
           }
@@ -114,57 +110,113 @@ export default function login() {
       }
     }
   };
+
+  const [darkTheme, setDarkTheme] = useDarkMode();
+  const handleMode = () => setDarkTheme(!darkTheme);
   return (
-    <div className=" bg-panel-header-background h-screen">
-      <div className="flex items-center justify-start gap-2 px-5 text-white">
+    <div>
+      <div className="flex items-center p-7 justify-between top-navigation">
         <Image
           className="animate-pulse"
           src="/connectme.svg"
           alt="ConnectMe"
-          height={100}
-          width={100}
+          height={80}
+          width={80}
         />
-        <span className="text-xl ">ConnectMe</span>
-      </div>
-
-      <div className="max-w-2xl flex items-center justify-center mx-auto">
-        <div className="bg-search-input-container-background p-5 rounded-md flex flex-col justify-center mt-5 gap-6 w-full">
-          {errorMessage && (
-            <span className="text-sm text-red-400">{errorMessage} </span>
+        <span onClick={handleMode}>
+          {darkTheme ? (
+            <FaSun size="24" className="top-navigation-icon" />
+          ) : (
+            <FaMoon size="24" className="top-navigation-icon" />
           )}
+        </span>
+      </div>
+      <div class="bg-white dark:bg-gray-700 dark:border-t dark:border-gray-500 py-5 max-w-screen">
+        <div class="container flex flex-col mx-auto bg-white dark:bg-gray-700 my-5">
+          <div class="flex justify-center w-full h-full my-auto xl:gap-14 lg:justify-normal md:gap-5 draggable">
+            <div class="flex items-center justify-center w-full lg:p-12">
+              <div class="flex items-center xl:p-10">
+                <div class="flex flex-col w-full h-full pb-6 text-center bg-white dark:bg-gray-700  rounded-3xl">
+                  <h3 class="mb-3 text-4xl font-extrabold text-gray-900 dark:text-white">
+                    Sign In
+                  </h3>
+                  <p class="mb-4 text-gray-700 dark:text-gray-400">
+                    Enter your email and password
+                  </p>
+                  <div
+                    onClick={() => handleLogin({ type: "Google" })}
+                    class="flex cursor-pointer items-center justify-center w-full py-4 mb-6 text-sm font-medium transition duration-300 rounded-2xl text-gray-900 bg-white dark:bg-gray-700 hover:bg-gray-400 focus:ring-4 focus:ring-gray-300 border dark:text-gray-400 dark:hover:bg-gray-400 dark:hover:text-black  ease-linear"
+                  >
+                    <FcGoogle size={28} className="mr-5" /> Sign in with Google
+                  </div>
 
-          <Input
-            inputtype="email"
-            name="Email"
-            state={email}
-            setState={setEmail}
-            label
-          />
-          <Input
-            inputtype="password"
-            name="Password"
-            state={password}
-            setState={setPassword}
-            label
-          />
-          <div className=" flex items-center justify-center ">
-            <button
-              onClick={() => handleLogin({ type: "EmailPassword" })}
-              className="flex items-center justify-center gap-7 bg-gray-400 font-semibold p-5 rounded-md"
-            >
-              Login
-            </button>
+                  <div class="flex items-center mb-3">
+                    <hr class="h-0 border-b border-solid border-gray-500 grow" />
+                    <p class="mx-4 text-gray-600 dark:text-gray-100">OR</p>
+                    <hr class="h-0 border-b border-solid border-gray-500 grow" />
+                  </div>
+
+                  {errorMessage && (
+                    <span className="text-sm text-red-400 my-2">
+                      {errorMessage}{" "}
+                    </span>
+                  )}
+
+                  <label
+                    for="email"
+                    class="mb-2 text-sm text-start text-gray-900 dark:text-gray-400"
+                  >
+                    Email
+                  </label>
+                  <input
+                    id="email"
+                    type="email"
+                    name="Email"
+                    state={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="connectme@gmail.com"
+                    class="flex items-center w-full px-5 py-4 mr-2 text-sm font-medium outline-none focus:bg-gray-400 mb-7 placeholder:text-gray-700 bg-gray-200  text-gray-900 rounded-2xl"
+                  />
+                  <label
+                    for="password"
+                    class="mb-2 text-sm text-start text-gray-900 dark:text-gray-400"
+                  >
+                    Password
+                  </label>
+                  <input
+                    id="password"
+                    type="password"
+                    name="Password"
+                    state={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter a password"
+                    class="flex items-center w-full px-5 py-4 mb-5 mr-2 text-sm font-medium outline-none focus:bg-gray-400 placeholder:text-gray-700 bg-gray-200 text-gray-900 rounded-2xl"
+                  />
+                  <div class="flex flex-row justify-end mb-8">
+                    <span class="mr-4 text-sm font-medium text-blue-500">
+                      Forget password?
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => handleLogin({ type: "EmailPassword" })}
+                    class="w-full px-6 py-5 mb-5 text-sm font-bold leading-none text-white transition duration-300 md:w-96 rounded-2xl hover:bg-blue-600 focus:ring-4 focus:ring-blue-100 bg-blue-500"
+                  >
+                    Sign In
+                  </button>
+                  <p class="text-sm leading-relaxed text-gray-900 dark:text-gray-400">
+                    Not registered yet?{" "}
+                    <span
+                      onClick={() => router.push("signup")}
+                      class="font-bold text-gray-700 dark:text-gray-100 cursor-pointer hover:scale-105 hover:underline"
+                    >
+                      Create an Account
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="flex justify-center items-center bg-panel-header-background mt-5 w-full flex-col gap-6">
-        <button
-          onClick={() => handleLogin({ type: "Google" })}
-          className="flex items-center justify-center gap-7 bg-search-input-container-background p-5 rounded-md"
-        >
-          <FcGoogle className="text-4xl" />
-          <span className="text-white text-xl">Login With Google</span>
-        </button>
       </div>
     </div>
   );

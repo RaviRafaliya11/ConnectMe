@@ -9,12 +9,12 @@ function ImageMessage({ message }) {
   const [{ messages, currentChatUser, userInfo }, dispatch] =
     useStateProvider();
   return (
-    <div>
+    <div className="my-1">
       <div
         className={`p-1 rounded-lg ${
           message.senderId === currentChatUser.id
             ? "bg-incoming-background"
-            : "bg-outgoing-background"
+            : "bg-incoming-background"
         }`}
       >
         <div className="relative">

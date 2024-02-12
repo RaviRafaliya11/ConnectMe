@@ -2,10 +2,11 @@ import { useStateProvider } from "@/context/StateContext";
 import { reducerCases } from "@/context/constants";
 import Image from "next/image";
 import React from "react";
+import { MdOutlineCallEnd } from "react-icons/md";
+import { FiPhoneIncoming } from "react-icons/fi";
 
 function IncomingVoiceCall() {
   const [{ incomingVoiceCall, socket }, dispatch] = useStateProvider();
-
   const acceptCall = () => {
     dispatch({
       type: reducerCases.SET_VOICE_CALL,
@@ -22,31 +23,33 @@ function IncomingVoiceCall() {
     dispatch({ type: reducerCases.END_CALL });
   };
   return (
-    <div className="h-24 w-80 fixed mb-0 bottom-0 right-6 z-50 rounded-sm flex gap-5 items-center justify-start  p-4 bg-conversation-panel-background text-white drop-shadow-2xl border-icon-green border-2 py-4">
-      <div>
+    <div className="bg-gray-400 dark:bg-gray-700 w-full h-full flex flex-col items-center pt-20">
+      <p className="my-2 main-text ">Incoming Voice Call</p>
+      <div className="bg-black/10 dark:bg-white/10 rounded-lg py-10 px-20 w-auto h-auto flex flex-col items-center justify-center">
         <Image
           src={incomingVoiceCall.profilePicture}
           alt="avatar"
-          width={70}
-          height={70}
+          height={150}
+          width={150}
           className="rounded-full"
         />
-      </div>
-      <div>
-        <div>{incomingVoiceCall.name}</div>
-        <div className="text-xs">Incoming Voice Call</div>
-        <div className="flex gap-2 mt-2">
-          <button
-            className="bg-red-500 p-1 px-3 text-sm rounded-full"
-            onClick={rejectCall}
-          >
-            Reject
+        <p className="font-semibold my-5 text-3xl dark:text-white capitalize ">
+          {incomingVoiceCall.name}
+        </p>
+
+        <div className="flex items-center gap-5">
+          <button onClick={rejectCall} class="CallBtn bg-red-500">
+            <div class="sign">
+              <MdOutlineCallEnd className="text-3xl cursor-pointer dark:text-white" />
+            </div>
+            <div class="text">Decline</div>
           </button>
-          <button
-            className="bg-green-500 p-1 px-3 text-sm rounded-full"
-            onClick={acceptCall}
-          >
-            Accept
+
+          <button onClick={acceptCall} class="CallBtn bg-green-500">
+            <div class="sign">
+              <FiPhoneIncoming className="text-3xl cursor-pointer dark:text-white" />
+            </div>
+            <div class="text">Accept</div>
           </button>
         </div>
       </div>

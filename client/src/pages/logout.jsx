@@ -15,6 +15,7 @@ function logout() {
     dispatch({ type: reducerCases.SET_USER_INFO, userInfo: undefined });
     if (savedData) {
       localStorage.removeItem("userInfoLocalStorage");
+      signOut(firebaseAuth);
     } else {
       signOut(firebaseAuth);
     }

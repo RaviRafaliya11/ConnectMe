@@ -12,3 +12,5 @@ export const ADD_IMAGE_MESSAGE_ROUTE = `${MESSAGES_ROUTE}/add-image-message`;
 export const GET_INITIAL_CONTACTS_ROUTE = `${MESSAGES_ROUTE}/get-initial-contacts`;
 export const ADD_AUDIO_MESSAGE_ROUTE = `${MESSAGES_ROUTE}/add-audio-message`;
 export const GET_CALL_TOKEN = `${AUTH_ROUTE}/generate-token`;
+export const UPDATE_USER_PREMIUM_STATUS = `${AUTH_ROUTE}/updateUserPremiumStatus`;
+export const DELETE_MESSAGE_ROUTE = `${MESSAGES_ROUTE}/deleteMessage`;

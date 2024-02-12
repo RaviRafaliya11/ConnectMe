@@ -81,7 +81,7 @@ function Avatar({ type, image, setImage }) {
           </div>
         )}
         {type === "lg" && (
-          <div className="relative h-14 w-14">
+          <div className="relative h-10 w-10">
             <Image src={image} alt="avatar" className="rounded-full" fill />
           </div>
         )}

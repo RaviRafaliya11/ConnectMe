@@ -39,7 +39,7 @@ function VoiceMessage({ message }) {
   }, []);
 
   useEffect(() => {
-    const audioURL = `${HOST}/${message.message}`;
+    const audioURL = `${HOST}/${message?.message}`;
     const audio = new Audio(audioURL);
     setAudioMessage(audio);
     waveform.current.load(audioURL);
@@ -85,10 +85,10 @@ function VoiceMessage({ message }) {
 
   return (
     <div
-      className={`flex items-center gap-5 text-white px-4 pr-2 py-4 text-sm rounded-md ${
+      className={`flex items-center gap-5 my-1 text-white px-4 pr-2 py-4 text-sm rounded-md ${
         message.senderId === currentChatUser.id
           ? "bg-incoming-background"
-          : "bg-outgoing-background"
+          : "bg-incoming-background"
       }`}
     >
       <div>
@@ -107,7 +107,7 @@ function VoiceMessage({ message }) {
           <span>
             {formatTime(isPlaying ? currentPlaybackTime : totalDuration)}
           </span>
-          <div className="flex gap-1">
+          <div className="flex gap-1 pb-2">
             <span>{calculateTime(message.createdAt)}</span>
             {message.senderId === userInfo.id && (
               <MessageStatus messageStatus={message.messageStatus} />

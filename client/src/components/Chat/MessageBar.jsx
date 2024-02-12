@@ -3,12 +3,11 @@ import { reducerCases } from "@/context/constants";
 import { ADD_IMAGE_MESSAGE_ROUTE, ADD_MESSAGE_ROUTE } from "@/utils/ApiRoutes";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
-import { BsEmojiSmile } from "react-icons/bs";
-import { FaMicrophone } from "react-icons/fa";
-import { ImAttachment } from "react-icons/im";
-import { MdSend } from "react-icons/md";
 import EmojiPicker from "emoji-picker-react";
 import PhotoPicker from "../common/PhotoPicker";
+import { MdEmojiEmotions, MdFilePresent } from "react-icons/md";
+import { IoSend } from "react-icons/io5";
+import { FaMicrophone } from "react-icons/fa";
 
 import dynamic from "next/dynamic";
 const CaptureAudio = dynamic(() => import("../common/CaptureAudio"), {
@@ -59,7 +58,8 @@ function MessageBar() {
     }
   }, [grabImage]);
 
-  const sendMessage = async () => {
+  const sendMessage = async (e) => {
+    e.preventDefault();
     try {
       const { data } = await axios.post(ADD_MESSAGE_ROUTE, {
         to: currentChatUser?.id,
@@ -86,7 +86,8 @@ function MessageBar() {
     try {
       const file = e.target.files[0];
       const formData = new FormData();
-      formData.append("image", file);
+      formData.append("image", file, file.name);
+
       const response = await axios.post(ADD_IMAGE_MESSAGE_ROUTE, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -114,64 +115,69 @@ function MessageBar() {
   };
 
   return (
-    <div className="bg-panel-header-background h-20 px-4 flex items-center gap-6 relative">
-      {!showAudioRecorder && (
-        <>
-          <div className="flex gap-6">
-            <BsEmojiSmile
-              className="text-panel-header-icon cursor-pointer text-xl"
-              title="Emoji"
-              id="emoji-open"
-              onClick={handleEmojiModal}
-            />
+    <>
+      {currentChatUser && (
+        <form onSubmit={sendMessage}>
+          <div className="relative">
+            <div className="bottom-bar">
+              <MdEmojiEmotions
+                size={33}
+                className="messagebar-icon"
+                title="Emoji"
+                id="emoji-open"
+                onClick={handleEmojiModal}
+              />
 
-            {showEmojiPicker && (
-              <div
-                ref={emojiPickerRef}
-                className=" absolute bottom-24 left-16 z-40"
-              >
-                <EmojiPicker onEmojiClick={handleEmojiClick} theme="dark" />
-              </div>
-            )}
+              {showEmojiPicker && (
+                <div
+                  ref={emojiPickerRef}
+                  className="absolute bottom-24 left-16 z-40"
+                >
+                  <EmojiPicker onEmojiClick={handleEmojiClick} theme="dark" />
+                </div>
+              )}
 
-            <ImAttachment
-              className="text-panel-header-icon cursor-pointer text-xl"
-              title="Attach File"
-              onClick={() => setGrabImage(true)}
-            />
-          </div>
+              <MdFilePresent
+                size={33}
+                className=" messagebar-icon mr-2"
+                onClick={() => setGrabImage(true)}
+              />
 
-          <div className="w-full rounded-lg h-10 flex items-center">
-            <input
-              type="text"
-              placeholder="Type a message"
-              className="bg-input-background text-sm focus:outline-none text-white h-10 rounded-lg px-5 py-4 w-full"
-              onChange={(e) => setMessage(e.target.value)}
-              value={message}
-            />
-          </div>
-          <div className="flex w-10 items-center justify-center">
-            <button>
+              <input
+                onChange={(e) => setMessage(e.target.value)}
+                value={message}
+                type="text"
+                placeholder="Enter message..."
+                className="bottom-bar-input"
+              />
               {message.length ? (
-                <MdSend
-                  className="text-panel-header-icon cursor-pointer text-x1"
-                  title="Send message"
-                  onClick={sendMessage}
+                <IoSend
+                  onClick={(e) => sendMessage(e)}
+                  size={28}
+                  className="messagebar-icon rounded mr-1"
                 />
               ) : (
-                <FaMicrophone
-                  className="text-panel-header-icon cursor-pointer text-x1"
-                  title="Record"
-                  onClick={() => setShowAudioRecorder(true)}
-                />
+                <>
+                  {!showAudioRecorder && (
+                    <FaMicrophone
+                      size={28}
+                      className=" messagebar-icon mr-2"
+                      title="Record"
+                      onClick={() => setShowAudioRecorder(true)}
+                    />
+                  )}
+
+                  {showAudioRecorder && (
+                    <CaptureAudio hide={setShowAudioRecorder} />
+                  )}
+                </>
               )}
-            </button>
+            </div>
           </div>
-        </>
+        </form>
       )}
       {grabImage && <PhotoPicker onChange={imagePickerChange} />}
-      {showAudioRecorder && <CaptureAudio hide={setShowAudioRecorder} />}
-    </div>
+    </>
   );
 }
 

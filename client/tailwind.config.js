@@ -1,12 +1,27 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./src/**/*.{js,jsx,ts,tsx}"],
+  mode: "jit",
+  content: [
+    "./src/**/*.{js,jsx,ts,tsx}",
+    "./src/components/**/*.{js,ts,jsx,tsx}",
+  ],
+  darkMode: "class",
   theme: {
     extend: {
       backgroundImage: {
         "chat-background": "url('/chat-bg.png')",
       },
       colors: {
+        gray: {
+          900: "#202225",
+          800: "#2f3136",
+          700: "#36393f",
+          600: "#4f545c",
+          400: "#d4d7dc",
+          300: "#e3e5e8",
+          200: "#ebedef",
+          100: "#f2f3f5",
+        },
         secondary: "#8696a0",
         "teal-light": "#7ae3c3",
         "photopicker-overlay-background": "rgba(30,42,49,0.8)",
@@ -27,10 +42,16 @@ module.exports = {
         "bubble-meta": "hsla(0,0%,100%,0.6)",
         "icon-ack": "#53bdeb",
       },
+      spacing: {
+        88: "22rem",
+      },
       gridTemplateColumns: {
         main: "1fr 2.4fr",
       },
     },
   },
-  plugins: [],
+  plugins: [
+    require("tailwind-scrollbar-hide"),
+    require("@tailwindcss/line-clamp"),
+  ],
 };

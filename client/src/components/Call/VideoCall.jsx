@@ -13,7 +13,7 @@ function VideoCall() {
         to: videoCall.id,
         from: {
           id: userInfo.id,
-          profilePicture: userInfo.profileImage,
+          profilePicture: userInfo.profilePicture,
           name: userInfo.name,
         },
         callType: videoCall.callType,
